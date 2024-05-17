@@ -1,45 +1,25 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model despesas {
-  id_despesa Int       @id @default(autoincrement())
-  descricao  String?   @db.Text
-  categoria  String?   @db.VarChar(100)
-  valor      Decimal   @db.Decimal(10, 2)
-  data       DateTime? @db.Date
+generator client {
+  provider = "prisma-client-js"
 }
 
-model receitas {
-  id_receita Int       @id @default(autoincrement())
-  descricao  String?   @db.Text
-  categoria  String?   @db.VarChar(100)
-  valor      Decimal   @db.Decimal(10, 2)
-  data       DateTime? @db.Date
+model Tarefa {
+  id             Int       @id @default(autoincrement())
+  titulo         String
+  descricao      String?
+  dataVencimento DateTime
+  prioridade     String
+  estado         String
 }
 
-model tarefas {
-  id_tarefa       Int                 @id @default(autoincrement())
-  titulo          String              @db.VarChar(255)
-  descricao       String?             @db.Text
-  data_vencimento DateTime?           @db.Date
-  prioridade      tarefas_prioridade? @default(Baixa)
-  estado          tarefas_estado?     @default(Pendente)
-}
-
-enum tarefas_prioridade {
-  Baixa
-  M_dia @map("Média")
-  Alta
-}
-
-enum tarefas_estado {
-  Pendente
-  Em_andamento @map("Em andamento")
-  Conclu_da    @map("Concluída")
+model Transacao {
+  id        Int       @id @default(autoincrement())
+  descricao String?
+  categoria String
+  valor     Float
+  data      DateTime
 }
