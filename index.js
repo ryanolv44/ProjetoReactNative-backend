@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const tarefaRoutes = require('./routes/tarefaRoutes');
-const transacaoRoutes = require('./routes/transacaoRoutes');
+const tarefaRoutes = require('./src/routes/tarefaRoutes');
+const transacaoRoutes = require('./src/routes/transacaoRoutes');
 
 dotenv.config();
 const app = express();
