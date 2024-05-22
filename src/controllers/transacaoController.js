@@ -1,5 +1,13 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { z } = require('zod');
+
+const transacaoSchema = z.object({
+  descricao: z.string().optional(),
+  categoria: z.string(),
+  valor: z.number(),
+  data: z.string(), // Expecting ISO string for DateTime
+});
 
 const getTransacoes = async (req, res) => {
   try {
@@ -11,10 +19,14 @@ const getTransacoes = async (req, res) => {
 };
 
 const createTransacao = async (req, res) => {
-  const { descricao, categoria, valor, data } = req.body;
+  const result = transacaoSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.errors });
+  }
+
   try {
     const transacao = await prisma.transacao.create({
-      data: { descricao, categoria, valor, data },
+      data: result.data,
     });
     res.json(transacao);
   } catch (error) {
@@ -24,11 +36,15 @@ const createTransacao = async (req, res) => {
 
 const updateTransacao = async (req, res) => {
   const { id } = req.params;
-  const { descricao, categoria, valor, data } = req.body;
+  const result = transacaoSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.errors });
+  }
+
   try {
     const transacao = await prisma.transacao.update({
       where: { id: Number(id) },
-      data: { descricao, categoria, valor, data },
+      data: result.data,
     });
     res.json(transacao);
   } catch (error) {

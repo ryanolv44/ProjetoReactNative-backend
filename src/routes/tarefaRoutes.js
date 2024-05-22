@@ -1,5 +1,5 @@
 const express = require('express');
-const { getTarefas, createTarefa, updateTarefa, deleteTarefa } = require('../controllers/tarefasController');
+const { getTarefas, createTarefa, updateTarefa, deleteTarefa } = require('../controllers/tarefaController');
 const router = express.Router();
 
 router.get('/', getTarefas);

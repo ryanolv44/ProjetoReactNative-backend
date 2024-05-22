@@ -1,5 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { z } = require('zod');
+
+const tarefaSchema = z.object({
+  titulo: z.string(),
+  descricao: z.string().optional(),
+  dataVencimento: z.string(), // Expecting ISO string for DateTime
+  prioridade: z.enum(['Baixa', 'Média', 'Alta']),
+  estado: z.enum(['Pendente', 'Em andamento', 'Concluída'])
+});
 
 const getTarefas = async (req, res) => {
   try {
@@ -11,10 +20,14 @@ const getTarefas = async (req, res) => {
 };
 
 const createTarefa = async (req, res) => {
-  const { titulo, descricao, dataVencimento, prioridade, estado } = req.body;
+  const result = tarefaSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.errors });
+  }
+
   try {
     const tarefa = await prisma.tarefa.create({
-      data: { titulo, descricao, dataVencimento, prioridade, estado },
+      data: result.data,
     });
     res.json(tarefa);
   } catch (error) {
@@ -24,11 +37,15 @@ const createTarefa = async (req, res) => {
 
 const updateTarefa = async (req, res) => {
   const { id } = req.params;
-  const { titulo, descricao, dataVencimento, prioridade, estado } = req.body;
+  const result = tarefaSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.errors });
+  }
+
   try {
     const tarefa = await prisma.tarefa.update({
       where: { id: Number(id) },
-      data: { titulo, descricao, dataVencimento, prioridade, estado },
+      data: result.data,
     });
     res.json(tarefa);
   } catch (error) {
